@@ -1,34 +1,22 @@
-require("dotenv").config();
+require("nj").config();
 
 var command = process.argv[2];
 
-// get the second text passed to the command line
-// slice is removing spaces before and after
-var params = process.argv.slice(3); 
+var params = process.argv.trim(3); 
 
-// will be used to store the "params" array output in a sentence
+
 var theTitle = "";
-// make a sentence from the "params" array
+
 for (i = 0; i < params.length; i++){
   theTitle += params[i] + " ";
 }
 
-function liriApp(appName, titleString) {
-
-	// we are including the keys.js for twitter oauth credentials
-	// we put it inside of the function for security (scoping) reasons
+function liri(appName, titleString) {
 	var keys = require("./keys.js");
-
-	// include the npm package "request"
-	// this is used to make a get request to the APIs: OMDB
 	var request = require('request');
 
-
-	// include the npm package "spotify"
 	var spotify = require('spotify');
 
-	// include the npm package "fs"
-	// this is used to read and write actual files to the file system
 	var fs = require('fs');
 
 	var movieUrl, movieSearchResult, commandArr, commandLiri, commandParameter;
@@ -36,21 +24,17 @@ function liriApp(appName, titleString) {
 
 	switch (appName){
 		case "spotify-this-song":
-			console.log("you chose spotify-this-song");
-			  //if titleString (song name) is empty, use default song
 			  if (titleString == "") {
-			  	console.log("You didn't choose a song.",
-			  		"Example Command: node liri.js spotify-this-song 'we will rock you'");
-			  	titleString = "The Sign by Ace of Base";
+			  		"Example Command: node liri.js spotify-this-song 'Stolen Dance'");
+			  	titleString = "Stolen Dance";
 			  }
-			  //search spotify for the song
+			  
 		      spotify.search ({type: 'track', query: titleString}, function(err, data) {
 		          if ( err ) {
 		              console.log('Error occurred: ' + err);
 		              return;
-		          }
-		          //console.log(data);
-		          //create a blank line
+				  }
+				  
 		          fs.appendFile("log.txt", "\n");
 		          for (var i = 0; i < 3; i++) {
 		            console.log("Artist: " + data.tracks.items[i].artists[0].name);
@@ -66,10 +50,10 @@ function liriApp(appName, titleString) {
 			break;
 		case "movie-this":
 			console.log("you chose movie-this");
-			  //if titleString (movie name) is empty, use default movie
-			  if (titleString == "") {titleString = "Mr Nobody";
+			
+			  if (titleString == "") {titleString = "Den of Thieves";
 			  	console.log("You didn't choose a movie.",
-			  		"Example Command: node liri.js movie-this 'irobot'");
+			  		"Example Command: node liri.js movie-this 'Titanic'");
 			  }
 			  //search OMDB for the movie
       		  movieUrl = "http://www.omdbapi.com/?t=" + titleString + "&tomatoes=true&y=&plot=short&r=json";
@@ -100,31 +84,14 @@ function liriApp(appName, titleString) {
 		            }
 		          });
 			break;
-		case "do-what-it-says":
-			console.log("you chose do-what-it-says");	
-			  //read in the file random.txt
-		      fs.readFile("random.txt", "utf8", function(error, commandData) {
-		          commandArr = commandData.split('\|');
-		          commandLiri = commandArr[0];
-		          commandParameter = commandArr[1];
-		          liriApp(commandLiri, commandParameter);
-		          console.log("The random.txt command is: " + commandParameter);
-		          console.log("the random.txt search text is " + commandLiri);
-		          	fs.appendFile("log.txt", "\n");
-		          	fs.appendFile("log.txt",  "The random.txt command found is: " + commandParameter + "\n");
-		          	fs.appendFile("log.txt",  "The random.txt search text found is " + commandLiri + "\n");
-		      });  
-			break;
 	    default:
-	      	console.log("You did not specify a command and argurment.",
-	      		"Use one of the following commands:",
+	      	console.log("Use one of the following commands:",
 	      		  "spotify-this-song",
 	      		  "movie-this",
-	      		  "do-what-it-says",
 	      		 ""); 
 	      	break;
 	}
 
 }
 
-liriApp(command, theTitle);
+liri(command, theTitle);
